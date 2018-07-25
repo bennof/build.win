@@ -1,0 +1,7 @@
+.build.win
+bin
+dll
+priv
+src
+test
+project.cfg

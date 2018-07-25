@@ -1,0 +1,1 @@
+Remove-Item -Force -Path ".\src", ".\bin", ".\dll", ".\priv", ".\test", ".\project.cfg", ".\.build.win"
