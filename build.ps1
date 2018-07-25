@@ -43,7 +43,6 @@ function mk_run(){
 }
 
 
-
 if ($help) {
     Start-Process "https://github.com/bennof/build.win"
     return 0;
@@ -86,6 +85,7 @@ Git = `"https://github.com/`"
 
 "@; 
     $CONFIG | Out-File -FilePath $CFG -Encoding UTF8;
+    Write-Output "If you are using git, add '.build.win' to '.gitignore'"
     return 0;
 }
 
