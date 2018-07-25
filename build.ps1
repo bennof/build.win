@@ -22,7 +22,7 @@ function mk_deps(){
     $conf["deps"].Keys | foreach-object -process { 
         Write-Host "$_ :"$conf["deps"][$_]
         $target = ".\$_"
-        $l_name = ".\"($conf["deps"][$_] | split-path -leaf)
+        $l_name = ".\"+($conf["deps"][$_] | split-path -leaf)
         if(![System.IO.File]::Exists($target)){
             Write-Host "Get: "$conf["deps"][$_]
             git clone $conf["deps"][$_]
