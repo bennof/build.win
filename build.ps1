@@ -20,16 +20,19 @@ function mk_deps(){
     $dir = Get-Location
     Set-Location -Path ".\dll"
     $conf["deps"].Keys | foreach-object -process { 
-        Write-Host "$_ :"$conf["deps"][$_];
+        Write-Host "$_ :"$conf["deps"][$_]
         $target = ".\$_"
-        $l_name = ($conf["deps"][$_] | split-path -leaf)
+        $l_name = ".\"($conf["deps"][$_] | split-path -leaf)
         if(![System.IO.File]::Exists($target)){
-            Write-Host "Clone: "$conf["deps"][$_];
-            Write-Host  "git clone "$conf["deps"][$_];
+            Write-Host "Get: "$conf["deps"][$_]
+            git clone $conf["deps"][$_]
             Write-Host "Build: $l_name"
+            $bdir = Get-Location
+            Set-Location -Path $l_name
+            Invoke-Item (Start-Process powershell ((Split-Path $MyInvocation.InvocationName) + ".\build.ps1 -build"))
+            Set-Location -Path $bdir
+            Copy-Item -Path "\*" -Include *.dll  -Destination "."
         }
-        #git clone $conf["deps"][$_];
-        #Copy-Item ".\\" -Destination ".\$_"
     }
     Set-Location -Path $dir
     return 0
