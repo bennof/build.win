@@ -6,6 +6,7 @@ param (
     [string]$CFG   = ".\project.cfg",
     [string]$BUILD_WIN_PATH = ".\.build.win",
     [string]$NAME = ($PSScriptRoot | split-path -leaf),
+    [switch]$update_build = $false,
     [switch]$help  = $false,
     [switch]$deps  = $false,
     [switch]$build = $false,
