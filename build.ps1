@@ -18,6 +18,9 @@ param (
 function mk_deps(){
     Write-Host "<<DEPS>>"
     $dir = Get-Location
+    if(!(Test-Path -Path ".\dll" )){
+        New-Item -ItemType directory -Path ".\dll"
+    }
     Set-Location -Path ".\dll"
     $conf["deps"].Keys | foreach-object -process { 
         Write-Host "$_ :"$conf["deps"][$_]
@@ -25,13 +28,13 @@ function mk_deps(){
         $l_name = ".\"+($conf["deps"][$_] | split-path -leaf)
         if(![System.IO.File]::Exists($target)){
             Write-Host "Get: "$conf["deps"][$_]
-            git clone $conf["deps"][$_]
+            Invoke-Expression "git clone $($conf['deps'][$_])"
             Write-Host "Build: $l_name"
             $bdir = Get-Location
             Set-Location -Path $l_name
-            Invoke-Item (Start-Process powershell ((Split-Path $MyInvocation.InvocationName) + ".\build.ps1 -build"))
+            Invoke-Expression ".\build.ps1 -build"
             Set-Location -Path $bdir
-            Copy-Item -Path "\*" -Include *.dll  -Destination "."
+            Copy-Item -Path "$l_name\dll\*" -Include *.dll  -Destination "."
         }
     }
     Set-Location -Path $dir
@@ -39,12 +42,18 @@ function mk_deps(){
 }
 
 function mk_build(){
-    Write-Host "<<BUILD>>"
+    Write-Host "<<BUILD $pwd >>"
     $conf["build"].Keys | foreach-object -process {
         if ($_.Trim().EndsWith(".dll")) { # library
+            if(!(Test-Path -Path ".\dll" )){
+                New-Item -ItemType directory -Path ".\dll"
+            }
             Write-Host "csc -target:library -out:$_ $($conf['build'][$_])"
             Invoke-Expression "csc -target:library -out:$_ $($conf['build'][$_])" | Write-Host
         } elseif ($_.Trim().EndsWith(".exe")) { # executable
+            if(!(Test-Path -Path ".\bin" )){
+                New-Item -ItemType directory -Path ".\bin"
+            }
             Write-Host "csc -out:$_ $($conf['build'][$_])"
             Invoke-Expression "csc -out:$_ $($conf['build'][$_])" | Write-Host
         } else {
@@ -133,19 +142,19 @@ Try {
 
 
 if ($deps) {
-    if ( mk_deps -ne 0 ) { return 1 }
+    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
     return 0
 }
 
 if ($build) {
-    if ( mk_deps -ne 0 ) { return 1 }
-    if ( mk_build -ne 0 ) { return 1 }
+    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
+    if ( mk_build -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
     return 0;
 }
 
 if ($run) {
-    if ( mk_deps -ne 0 ) { return 1 }
-    if ( mk_build -ne 0 ) { return 1 }
-    if ( mk_run -ne 0 ) { return 1 }
+    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
+    if ( mk_build -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
+    if ( mk_run -ne 0 ) { Write-Error "ERROR RUN: $(pwd)"; return 1 }
     return 0;
 }
