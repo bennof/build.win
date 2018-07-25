@@ -13,7 +13,7 @@ Invoke-WebRequest -Uri https://raw.githubusercontent.com/bennof/build.win/master
 or 
 
 ```
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/bennof/build.win/master/build.ps1 -OutFile build.ps1
+wget https://raw.githubusercontent.com/bennof/build.win/master/build.ps1 -OutFile build.ps1
 ```
 
 ### Initialize the project

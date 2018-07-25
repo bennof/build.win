@@ -49,6 +49,15 @@ if ($help) {
     return 0;
 }
 
+if ($update_build) {
+    Remove-Item -Force -Path $BUILD_WIN_PATH
+    git clone https://github.com/bennof/build.win $BUILD_WIN_PATH
+    $f=get-item $BUILD_WIN_PATH -Force
+    $f.attributes="Hidden"
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/bennof/build.win/master/build.ps1 -OutFile build.ps1
+    return 0;
+}
+
 if ($init) {
     new-item -Force -itemtype directory -path ".\src", ".\bin", ".\dll", ".\priv", ".\test"
     git clone https://github.com/bennof/build.win $BUILD_WIN_PATH
