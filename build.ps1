@@ -26,7 +26,7 @@ function mk_deps(){
         Write-Host "$_ :"$conf["deps"][$_]
         $target = ".\$_"
         $l_name = ".\"+($conf["deps"][$_] | split-path -leaf)
-        if(![System.IO.File]::Exists($target)){
+        if( ! (Test-Path $target -PathType Leaf))  {
             Write-Host "Get: "$conf["deps"][$_]
             Invoke-Expression "git clone $($conf['deps'][$_])"
             Write-Host "Build: $l_name"
@@ -142,19 +142,19 @@ Try {
 
 
 if ($deps) {
-    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
+    if ( $(mk_deps) -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
     return 0
 }
 
 if ($build) {
-    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
-    if ( mk_build -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
+    if ( $(mk_deps) -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
+    if ( $(mk_build) -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
     return 0;
 }
 
 if ($run) {
-    if ( mk_deps -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
-    if ( mk_build -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
-    if ( mk_run -ne 0 ) { Write-Error "ERROR RUN: $(pwd)"; return 1 }
+    if ( $(mk_deps) -ne 0 ) { Write-Error "ERROR DEPS: $(pwd)"; return 1 }
+    if ( $(mk_build) -ne 0 ) { Write-Error "ERROR BUILD: $(pwd)"; return 1 }
+    if ( $(mk_run) -ne 0 ) { Write-Error "ERROR RUN: $(pwd)"; return 1 }
     return 0;
 }
