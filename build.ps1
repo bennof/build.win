@@ -16,11 +16,24 @@ param (
 
 function mk_deps(){
     Write-Host "<<DEPS>>"
+    $dir = Get-Location
+    Set-Location -Path ".\dll"
     $conf["deps"].Keys | foreach-object -process { 
         Write-Host "$_ :"$conf["deps"][$_];
+        $target = ".\$_"
+        $l_name = ($conf["deps"][$_] | split-path -leaf)
+        if(![System.IO.File]::Exists($target)){
+            Write-Host "Clone: "$conf["deps"][$_];
+            Write-Host  "git clone "$conf["deps"][$_];
+            Write-Host "Build: $l_name"
+        }
+        #git clone $conf["deps"][$_];
+        #Copy-Item ".\\" -Destination ".\$_"
     }
+    Set-Location -Path $dir
     return 0
 }
+
 function mk_build(){
     Write-Host "<<BUILD>>"
     $conf["build"].Keys | foreach-object -process {
